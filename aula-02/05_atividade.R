@@ -83,8 +83,9 @@ print(sum(acessos < acessos["alu201430899"]))
 ### # ###
 
 acessos_notas <- unlist(acessos_alunos)
-
-
+acessos_notas[which(acessos_alunos == 0)] <- NA
+acessos_notas[which(acessos_alunos >= 1 & acessos_alunos <10)] <- 1
+acessos_notas[which(acessos_alunos > 10) ] <- 2
 
 
 ### 8 ###
