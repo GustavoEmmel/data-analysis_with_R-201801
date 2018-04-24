@@ -13,9 +13,13 @@ load("aula-02/data/dados_exercicio.RData")
 ### # ####
 
 
+str(acessos_alunos)
+
 
 ### 2 ###
 ## Quantos elementos a variável acessos_alunos possui? Utilize uma função do R que retorna o tamanho da variável.
+
+length(acessos_alunos)
 
 ## Dica: Vimos um exemplo no mesmo material sobre estruturas de dados
 ### # ###
@@ -31,6 +35,10 @@ load("aula-02/data/dados_exercicio.RData")
 ## Dica 2: Vimos exemplos disto nos materiais dos tipos numéricos e das estruturas de dados.
 ### # ###
 
+acessos_alunos$alu201430899
+
+paste("O aluno alu201430899 realizou", acessos_alunos$alu201430899, "acessos")
+
 
 
 ### 4 ###
@@ -44,13 +52,14 @@ acessos <- unlist(acessos_alunos)
 ## 3. Determine o tamanho do vetor da operação 2, imprimindo o resultado na Console
 ### # ###
 
-
+maiores <- acessos [acessos > acessos["alu201430899"]]
+print(length(maiores))
 
 ### 5 ###
 ## Combine todas as etapas acima em uma única chamada, sem a criação dos vetores auxiliares
 ### # ###
 
-
+print(length(acessos [acessos > acessos["alu201430899"]]))
 
 ### 6 ###
 ## Agora determine quantos colegas fizeram menos acessos que você. 
@@ -59,6 +68,7 @@ acessos <- unlist(acessos_alunos)
 ## Dica: Lembre que falamos sobre como o R faz conversões implícitas entre o tipo lógico e tipos numéricos
 ### # ###
 
+print(sum(acessos < acessos["alu201430899"]))
 
 
 ### 7 ###
@@ -71,6 +81,9 @@ acessos <- unlist(acessos_alunos)
 ## Dica: Pode ser mais fácil se iniciar o vetor notas como uma cópia do vetor acessos, modificando os valores conforme as regras
 ## OBSERVAÇÃO :: Não avaliarei participação na forma do enunciado deste exercício. 
 ### # ###
+
+acessos_notas <- unlist(acessos_alunos)
+
 
 
 

@@ -48,6 +48,8 @@ if(is.atomic(answer)) print("É atômico.")
 if(is.numeric(answer)) print("É numérico")
 if(length(answer) == 1) print("Tamanho 1") 
 
+length(c(0,1,1))
+
 #' 
 #' Os elementos de um vetor podem ser acessados através do índice, sempre lembrando que vetores em R são indexados a partir de 1.
 #' 
@@ -69,6 +71,9 @@ which(seq_10_from_2 > 6) # Índices
 
 # Exiba-os, por favor :: a indexação também pode ser feita através de vetores lógicos, retornando todas as posições indexadas por TRUE
 seq_10_from_2[seq_10_from_2 > 6]
+
+v2 <- c(1, 2, 11, 5, 12, 14)
+v2 [v2 > 6]
 
 # Os 3 primeiros elementos, pela sua posição
 seq_10_from_2[1:3]
@@ -119,6 +124,8 @@ resposta[2:4]
 named_list <- list(number=42, spelled="quarenta e dois")
 named_list$number
 named_list$spelled
+
+str(named_list)
 
 # Desta forma o conteúdo pode ser utilizado como uma variável
 named_list$number * 2
