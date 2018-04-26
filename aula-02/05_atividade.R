@@ -91,7 +91,7 @@ acessos_notas[which(acessos_alunos > 10) ] <- 2
 ### 8 ###
 ## Visualização da quantidade de alunos com cada nota de participação. Esta não é uma atividade, apenas uma ilustração de como
 ## criar uma tabela com esta contagem
-table(notas)
+table(acessos_notas)
 
 
 
@@ -104,7 +104,19 @@ acessos_alunos_e_guest$guest <- NA
 ## Repita as atividades 4, 5, 6, e 7 utilizando o acessos_com_guest no lugar da lista acessos_alunos.
 ## Tome o devido cuidado de sempre criar variáveis com nomes diferentes das já utilizadas! 
 
+acessos2 <- unlist(acessos_alunos_e_guest)
 
+maiores2 <- acessos2 [acessos2 > acessos2["alu201430899"]]
+print(length(maiores2))
+
+print(length(acessos2 [acessos2 > acessos2["alu201430899"]]))
+
+print(sum(acessos2 < acessos2["alu201430899"]))
+
+acessos_notas2 <- unlist(acessos_alunos_e_guest)
+acessos_notas2[which(acessos_alunos_e_guest == 0)] <- NA
+acessos_notas2[which(acessos_alunos_e_guest >= 1 & acessos_alunos_e_guest <10)] <- 1
+acessos_notas2[which(acessos_alunos_e_guest > 10) ] <- 2
 
 ### 10 ###
 ## Responda as seguintes perguntas:
@@ -112,11 +124,35 @@ acessos_alunos_e_guest$guest <- NA
 
 # 1. Houve modificação no número de alunos com mais e com menos acessos que você?
 
+# Não
+
 # 2. Como você conclui que o R trata comparações (operações relacionais) entre valores numéricos e NA?
+
+# Na forma de indice
 
 # 3. Qual o resultado do uso da função sum na presença de NA? O que você conclui sobre a operação de soma de todos os valores de
 #    um vetor na presença de NA?
 
+sum(acessos_alunos_e_guest == 0)
+# NA
+# R CONSIDERA COMO SE FOSSE ZERO
+
 # 4. Execute o comando abaixo para ler a documentação da função sum e veja se há como modificar a chamada da função sum na presença
 #    de NAs. Teste os exemplos da página de help da função sum.
 help(sum)
+
+## Pass a vector to sum, and it will add the elements together.
+sum(1:5)
+
+## Pass several numbers to sum, and it also adds the elements.
+sum(1, 2, 3, 4, 5)
+
+## In fact, you can pass vectors into several arguments, and everything gets added.
+sum(1:2, 3:5)
+
+## If there are missing values, the sum is unknown, i.e., also missing, ....
+sum(1:5, NA)
+## ... unless  we exclude missing values explicitly:
+sum(1:5, NA, na.rm = TRUE)
+
+# PODERIAMOS USAR O PARAMETRO TRUE PARA SOMAR TODOS VALORES JUNTO COM OS VALORES DE STRING
