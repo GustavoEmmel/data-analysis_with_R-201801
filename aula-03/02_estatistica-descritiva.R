@@ -135,20 +135,60 @@ subset_salarios %>%
 #' 
 #' >> ATIVIDADE
 #' 
-#' Utilizando a função `year`, adicione ao dataset o Ano de Ingresso. A partir desta nova variável, determine o tempo médio de trabalho dos servidores, em nível nacional e por UF. Utilizar a data do campo `DATA_DIPLOMA_INGRESSO_SERVICOPUBLICO`. Nos dois casos, utilizar a combinação das funções `summarise` e `mean`.
+#' Utilizando a função `year`, adicione ao dataset o Ano de Ingresso. A partir desta nova variável, 
+#' determine o tempo médio de trabalho dos servidores, em nível nacional e por UF. 
+#' Utilizar a data do campo `DATA_DIPLOMA_INGRESSO_SERVICOPUBLICO`. Nos dois casos, utilizar a combinação das funções `summarise` e `mean`.
 #' 
 #' Por fim, determine a média salarial por ano de ingresso.
 #' 
 ## ------------------------------------------------------------------------
+
+subset_salarios %>%
+  group_by(UF_EXERCICIO) %>%
+  summarise(ano_ingresso = mean( year(DATA_DIPLOMA_INGRESSO_SERVICOPUBLICO) ), tempo_casa = 2018 - ano_ingresso) %>%
+  ungroup() %>%
+  arrange(desc(tempo_casa)) %>%
+  select(-ano_ingresso)
+
+
+subset_salarios %>%
+  mutate(ano_ingresso = year(DATA_DIPLOMA_INGRESSO_SERVICOPUBLICO)) %>%
+  group_by(UF_EXERCICIO) %>%
+  summarise(tempo_casa = mean(2018 - ano_ingresso) ) %>%
+  ungroup() %>%
+  arrange(desc(tempo_casa)) %>%
+  View()
+
+
 print("Atividade")
 ## Modificar o Dataset para criação de nova variável
 
+subset_com_ano <- subset_salarios %>%
+  mutate(ano_ingresso = year(DATA_DIPLOMA_INGRESSO_SERVICOPUBLICO))
+  
+
 ## Determine o tempo médio de trabalho em anos, em nível nacional
+
+subset_com_ano %>%
+  summarise(tempo_medio = mean(year(today()) - ano_ingresso))
 
 ## Determine o tempo médio de trabalho em anos, por UF
 
+subset_com_ano %>%
+  group_by(UF_EXERCICIO) %>%
+  summarise(tempo_medio = mean(year(today()) - ano_ingresso)) %>%
+  ungroup() %>%
+  arrange(desc(tempo_medio)) %>%
+  View()
+
 ## Determine a média salarial por ano de ingresso
 
+subset_com_ano %>%
+  group_by(ano_ingresso) %>%
+  summarise(media_salarial = mean(REMUNERACAO_REAIS)) %>%
+  ungroup() %>%
+  arrange(desc(media_salarial)) %>%
+  View()
 
 #' >> FIM DA ATIVIDADE
 #' 

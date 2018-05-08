@@ -14,6 +14,13 @@ salarios <- read_csv("aula-03/data/201802_dados_salarios_servidores.csv.gz")
 ## 
 ### # ####
 
+salarios %>%
+  select(REMUNERACAO_REAIS, REMUNERACAO_DOLARES) %>%
+  mutate(SALARIO_TOTAL = REMUNERACAO_REAIS + ( REMUNERACAO_DOLARES * 3.24)) ->
+  subset_salarios
+
+subset_salarios %>% filter(SALARIO_TOTAL > 900)
+
 
 ### 2 ####
 ## 
@@ -23,6 +30,18 @@ salarios <- read_csv("aula-03/data/201802_dados_salarios_servidores.csv.gz")
 ## 
 ## Dica: a função pull() do dplyr extrai uma variável em formato de vetor.
 salarios %>% count(UF_EXERCICIO) %>% pull(UF_EXERCICIO) -> ufs # EXEMPLO
+
+salarios %>%
+  filter(!is.na(UF_EXERCICIO)) %>%
+  group_by(DESCRICAO_CARGO) %>%
+  summarise(qtde = n()) %>%
+  ungroup()->
+  outras_lotacoes
+
+outras_lotacoes %>% arrange(desc(qtde)) -> top_cargos
+
+head(top_cargos, 5)
+
 ## 
 ### # ####
 
