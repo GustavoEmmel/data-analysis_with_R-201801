@@ -164,21 +164,16 @@ print("Atividade")
 ## Modificar o Dataset para criação de nova variável
 
 subset_com_ano <- subset_salarios %>%
+  mutate(ano_ingresso = year(DATA_DIPLOMA_INGRESSO_SERVICOPUBLICO))
+  
 
-  mutate(ano_ingresso = year(DATA_DIPLOMA_INGRESSO_SERVICOPUBLICO)) 
 
 ## Determine o tempo médio de trabalho em anos, em nível nacional
-subset_com_ano %>%
-  summarise(tempo_medio = mean(year(today()) - ano_ingresso))
 
 subset_com_ano %>%
   summarise(tempo_medio = mean(year(today()) - ano_ingresso))
 
 ## Determine o tempo médio de trabalho em anos, por UF
-subset_com_ano %>%
-  group_by(UF_EXERCICIO) %>%
-  summarise(tempo_medio = mean(year(today()) - ano_ingresso)) %>%
-  arrange(desc(tempo_medio)) %>% View()
 
 subset_com_ano %>%
   group_by(UF_EXERCICIO) %>%
@@ -188,11 +183,6 @@ subset_com_ano %>%
   View()
 
 ## Determine a média salarial por ano de ingresso
-subset_com_ano %>%
-  group_by(ano_ingresso) %>%
-  summarise(media_salarial = mean(REMUNERACAO_REAIS)) %>%
-  arrange(desc(media_salarial))
-
 
 subset_com_ano %>%
   group_by(ano_ingresso) %>%
@@ -245,6 +235,27 @@ subset_salarios %>%
 #' 
 ## ------------------------------------------------------------------------
 print("Atividade")
+
+
+subset_com_ano %>%
+  group_by(UF_EXERCICIO) %>%
+  summarise(media_salarial = mean(REMUNERACAO_REAIS)
+            , servidores = n()
+            , mediana_salario = median(REMUNERACAO_REAIS)
+            , media_maior = media_salarial > mediana_salario) %>%
+  ungroup() %>%
+ count(media_maior)
+
+subset_com_ano %>%
+  group_by(UF_EXERCICIO) %>%
+  summarise(media_salarial = mean(REMUNERACAO_REAIS)
+            , servidores = n()
+            , mediana_salario = median(REMUNERACAO_REAIS)
+            , media_maior = media_salarial > mediana_salario) %>%
+  ungroup() %>%
+  group_by(media_maior) %>%
+  summarise(total = n()) %>%
+  ungroup()
 
 ## Código aqui
 
@@ -332,22 +343,62 @@ subset_salarios %>%
 #' 
 #' __Atividade I__
 #' 
-#' A [Inequalidade de Chebyshev](https://en.wikipedia.org/wiki/Standard_deviation#Chebyshev's_inequality) afirma que, para distribuições de probabilidade onde o Desvio Padrão é definido, 2 Desvios Padrão da média devem absorver pelo menos 75% do tamanho da amostra.
+#' A [Inequalidade de Chebyshev](https://en.wikipedia.org/wiki/Standard_deviation#Chebyshev's_inequality) 
+#' afirma que, para distribuições de probabilidade onde o Desvio Padrão é definido, 2 Desvios Padrão 
+#' da média devem absorver pelo menos 75% do tamanho da amostra.
 #' 
 #' Verifique a validade deste teorema com os valores calculados.
 #' 
 ## ------------------------------------------------------------------------
 print("Atividade")
 
+dois_desvios <- 2 * sd(subset_salarios$REMUNERACAO_REAIS)
+
+media <- mean(subset_salarios$REMUNERACAO_REAIS)
+
+dois_desvios_da_media <- media + dois_desvios
+
+subset_salarios %>%
+  filter(REMUNERACAO_REAIS <= dois_desvios_da_media) %>%
+  nrow() -> total_dentro_de_dois_desvios
+
+total_dentro_de_dois_desvios / nrow(subset_salarios)
+
 ## Código aqui
 
 #' 
 #' __Atividade II__
 #' 
-#' No dataset de salários temos os diferentes cargos ocupados pelos servidores públicos federais. Liste os 10 cargos de __menor coeficiente de variação__ cujo cargo tenha mais que 100 servidores públicos. A lista deve conter, além do cargo e Coeficiente de Variação, a quantidade de servidores, o menor salário, o maior salário, o salário médio e o desvio padrão.
+#' No dataset de salários temos os diferentes cargos ocupados pelos servidores públicos federais. 
+#' Liste os 10 cargos de __menor coeficiente de variação__ cujo cargo tenha mais que 100 servidores públicos. 
+#' A lista deve conter, além do cargo e Coeficiente de Variação, a quantidade de servidores, o menor salário, 
+#' o maior salário, o salário médio e o desvio padrão.
 #' 
 ## ------------------------------------------------------------------------
 print("Atividade")
+
+
+subset_salarios %>%
+  count(DESCRICAO_CARGO) %>%
+  filter(n > 100) -> cargos_populares
+
+subset_salarios %>%
+  filter(DESCRICAO_CARGO %in% cargos_populares$DESCRICAO_CARGO)
+
+subset_salarios %>%
+  group_by(DESCRICAO_CARGO) %>%
+  filter(n()> 100) %>%
+  summarise(desvio_padrao = sd(REMUNERACAO_REAIS)
+            , media = mean(REMUNERACAO_REAIS)
+            , cv = desvio_padrao /media
+            , qtd_servidores = n()
+            , menor_salario = min(REMUNERACAO_REAIS)
+            , maior_salario = max(REMUNERACAO_REAIS)) %>%
+  ungroup() %>%
+  arrange(cv) %>%
+  tail(10)
+
+
 
 ## Código aqui
 

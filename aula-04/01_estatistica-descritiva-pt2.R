@@ -9,6 +9,7 @@
 Sys.setlocale("LC_ALL", "pt_BR")
 options(encoding = "UTF-8")
 
+
 #' 
 #' ## Continuação da Aula 03
 #' 
@@ -165,6 +166,13 @@ IQR(subset_salarios$REMUNERACAO_REAIS)
 #' 
 ## ------------------------------------------------------------------------
 print("Atividade")
+
+quantile(subset_salarios$REMUNERACAO_REAIS) -> desvio_absoluto_mediana
+
+IQR(subset_salarios$REMUNERACAO_REAIS) -> desvio_iqr
+
+desvio_iqr / desvio_absoluto_mediana
+
 
 ## Código aqui
 
