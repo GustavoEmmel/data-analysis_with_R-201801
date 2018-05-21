@@ -8,6 +8,7 @@ library(lubridate)
 ### IMPORTANTE ###
 ## Se você utilizar alguma função própria ou do material de aula, o código da(s) função(ões) deve estar neste arquivo da atividade.
 
+salarios <- read_csv("aula-03/data/201802_dados_salarios_servidores.csv.gz")
 
 ### 1 ####
 ## 
@@ -20,6 +21,23 @@ library(lubridate)
 ## 
 ### # ####
 
+subset_salarios %>%
+  group_by(DESCRICAO_CARGO) %>%
+  summarise( SERVIDORES = n(),CORRELACAO = cor(x = ( 2018 - year (DATA_INGRESSO_ORGAO)), y = (2018 -year(DATA_DIPLOMA_INGRESSO_SERVICOPUBLICO))))%>%
+  ungroup()%>%
+  filter(SERVIDORES >=200)%>%
+  arrange(SERVIDORES)%>%
+  mutate(DIRECAO = (ifelse(CORRELACAO>0,'POS','NEG')))%>%
+  mutate(CORRELACAO_ABSOLUTA = (ifelse(CORRELACAO>0,CORRELACAO,(CORRELACAO * (-1)))))%>%
+  mutate(FORCA = ifelse(CORRELACAO_ABSOLUTA >=0.9, '5',
+                        ifelse(CORRELACAO_ABSOLUTA >= 0.7 & CORRELACAO_ABSOLUTA < 0.9, '4',    
+                               ifelse(CORRELACAO_ABSOLUTA >= 0.5 & CORRELACAO_ABSOLUTA < 0.7, '3',
+                                      ifelse(CORRELACAO_ABSOLUTA >= 0.3 & CORRELACAO_ABSOLUTA < 0.5, '2','1')))))%>%
+  select(DESCRICAO_CARGO, CORRELACAO, DIRECAO, FORCA, CORRELACAO_ABSOLUTA) -> atividade1
+
+atividade1%>%
+  select(DESCRICAO_CARGO, CORRELACAO, DIRECAO, FORCA)
+
 ### 2 ###
 ##
 ## - A partir do dataset do exercício anterior, selecione os 10 cargos de correlação mais forte (seja positiva ou negativa) e os 
@@ -29,4 +47,3 @@ library(lubridate)
 ##   (caso haja diferença)
 ##
 ### # ###
-
