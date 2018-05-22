@@ -89,19 +89,15 @@ ted_talk %>%
 # Crie um dataframe com a contagem de apresentações por ano de filmagem e visualize todo o seu conteúdo
 ted_talk %>% 
   group_by(year(film_date)) %>%
-  mutate(qtde = n()) %>%
-  ungroup() %>%
-  select(description, qtde) -> exibicoes_por_ano
+  summarise(qtde = n()) %>%
+  ungroup() -> exibicoes_por_ano
 
 # Analise os 10 quantis da quantidade de apresentações por ano.
 # Descarte, do data frame de apresentações do TED Talks, aqueles cujo ano de filmagem tiver quantidade de apresentações menor ou igual à quantidade do quarto quantil.
 quantile(exibicoes_por_ano$qtde, probs = seq(from=0.1, to=1, by=0.1))
 
 ted_talk %>% 
-  group_by(film_date) %>%
-  mutate(qtde = n()) %>%
-  ungroup() %>%
-  filter(qtde > 4) -> top_ted_talks
+  filter(year(film_date) > 2003) -> top_ted_talks
 
 
 # Verifique novamente o resumo dos dados do dataframe
