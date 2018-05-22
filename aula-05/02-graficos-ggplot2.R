@@ -187,6 +187,8 @@ ggplot( aes( x = year, y = sum_views )) +
       , subtitle = "Exibição do total de visualizações de apresentações de um mesmo ano de filmagem") +
   theme_bw()
 
+
+
 #' 
 #' #### Exemplo com geom_bar
 #' 
