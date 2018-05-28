@@ -4,7 +4,7 @@ library(lubridate)
 
 
 # Crie um dataframe com o conteúdo do arquivo ted_main.csv.gz. 
-ted_talk <- read_csv("aula-05/data/ted_main.csv.gz")
+ted_talk <- read_csv("Documents/data-analysis_with_R-201801/aula-05/data/ted_main.csv.gz")
 
 
 
@@ -115,15 +115,19 @@ top_ted_talks %>%
 # Existem apresentações com duração maior que 3 desvios padrão acima da média? Liste elas
 
 
-
-
 # Calcule os 4 quartis e o IQR da duração das apresentações. Liste as apresentações cuja duração supera 1.5 * o IQR + o terceiro quartil
 
+quantile(ted_talk$duration)
+IQR(ted_talk$duration)
 
+filtro<-((1.5 * IQR(ted_talk$duration))  +  quantile(ted_talk$duration,probs = c(0.75)))
+ted_talk%>%  
+  filter(duration > filtro)
 
 
 # Visualize os 10 quantis da quantidade de visualizações
 
+quantile(ted_talk$views, probs = c(0.0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.0))
 
 
 
@@ -134,6 +138,14 @@ top_ted_talks %>%
 #   * Com base na média e na mediana, e na razão entre o IQR e o Desvio Absoluto da Mediana, 
 #     você conclui que as quantidades de visualização estão distribuidas de forma simétrica em torno da média?
 
+comparacao = ifelse(mean(ted_talk$views) > median(ted_talk$views), 'MEDIA MAIOR', 'MEDIANA MAIOR')
+print(comparacao)
+
+comparacao = ifelse(sd(ted_talk$views) > median( abs( ted_talk$views - median( ted_talk$views ))), 'DESVIO PADRAO MAIOR', 'DESVIO ABSOLUTO MEDIANA MAIOR')
+print(comparacao)
+
+IQR_MAIOR <- (IQR(ted_talk$views)/median( abs( ted_talk$views - median( ted_talk$views ))))
+print(paste('IQR: ',IQR_MAIOR,'Vezes Maior Desvio Absoluto Mediada'));
 
 
 
@@ -141,12 +153,27 @@ top_ted_talks %>%
 #     * 10% de vídeos com maior número de visualizações
 #     * 10% de vídeos com menor número de visualizações
 
+idx <- which(with( ted_talk, views <= quantile(ted_talk$views, probs = c(0.1))))
+dez_menos <- ted_talk[idx,]
+media_10menos<- mean(dez_menos$languages)
+dv_10menos<- sd(dez_menos$languages)
+mediana_10menos<- median(dez_menos$languages)
+iqr_10menos <- IQR(dez_menos$languages)
+print(paste("Dados Qtde Linguagens 10% Videos Menos Vistos: Media",media_10menos,"Desvio Padrão",dv_10menos,'Mediana', mediana_10menos, 'IQR', iqr_10menos))
 
-
+idx <- which(with( ted_talk, views >= quantile(ted_talk$views, probs = c(0.9))))
+dez_mais <- ted_talk[idx,]
+media_10mais<- mean(dez_mais$languages)
+dv_10mais<- sd(dez_mais$languages)
+mediana_10mais<- median(dez_mais$languages)
+iqr_10mais <- IQR(dez_mais$languages)
+print(paste("Dados Qtde Linguagens 10% Videos Mais Vistos: Media",media_10mais,"Desvio Padrão",dv_10mais,'Mediana', mediana_10mais, 'IQR', iqr_10mais))
 
 # Determine a quantidade de apresentações por evento cujo nome inicie com TED. Utilize a função str_detect para este filtro
 
-
+ted_talk%>%
+  filter(str_detect(event,'TED'))%>%
+  select(event,views) 
 
 
 # Determine, por evento cujo nome inicie com TED e que a quantidade de visualizações dos vídeos foi maior que a mediana calculada anteriormente.
@@ -176,7 +203,3 @@ top_ted_talks %>%
 
 # Utilizando o data frame original, crie um dataframe com a mediana da duração dos vídeos por ano de filmagem. Calcule a correlação entre o ano e a mediana da duração
 # e interprete o resultado
-
-
-
-
