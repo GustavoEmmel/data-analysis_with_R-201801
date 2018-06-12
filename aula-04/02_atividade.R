@@ -7,9 +7,16 @@ library(lubridate)
 
 ### IMPORTANTE ###
 ## Se você utilizar alguma função própria ou do material de aula, o código da(s) função(ões) deve estar neste arquivo da atividade.
-
 salarios <- read_csv("aula-03/data/201802_dados_salarios_servidores.csv.gz")
+head(salarios,20)
+salarios%>%
+  mutate(REMUNERACAO_FINAL= (REMUNERACAO_REAIS + (REMUNERACAO_DOLARES * 3.2421)))%>%
+  filter(REMUNERACAO_FINAL>900)%>%
+  select(ID_SERVIDOR_PORTAL, REMUNERACAO_REAIS, REMUNERACAO_DOLARES, REMUNERACAO_FINAL,DATA_INGRESSO_ORGAO,DATA_DIPLOMA_INGRESSO_SERVICOPUBLICO,DESCRICAO_CARGO,ORGSUP_LOTACAO,ORGSUP_EXERCICIO)->
+  subset_salarios
 
+subset_salarios%>%
+  head(20)
 ### 1 ####
 ## 
 ## Correlação de ano de ingresso por cargo
@@ -33,10 +40,11 @@ subset_salarios %>%
                         ifelse(CORRELACAO_ABSOLUTA >= 0.7 & CORRELACAO_ABSOLUTA < 0.9, '4',    
                                ifelse(CORRELACAO_ABSOLUTA >= 0.5 & CORRELACAO_ABSOLUTA < 0.7, '3',
                                       ifelse(CORRELACAO_ABSOLUTA >= 0.3 & CORRELACAO_ABSOLUTA < 0.5, '2','1')))))%>%
-  select(DESCRICAO_CARGO, CORRELACAO, DIRECAO, FORCA, CORRELACAO_ABSOLUTA) -> atividade1
+  select(DESCRICAO_CARGO, CORRELACAO, DIRECAO, FORCA, CORRELACAO_ABSOLUTA) -> atividade
 
-atividade1%>%
+atividade%>%
   select(DESCRICAO_CARGO, CORRELACAO, DIRECAO, FORCA)
+
 
 ### 2 ###
 ##
@@ -47,3 +55,44 @@ atividade1%>%
 ##   (caso haja diferença)
 ##
 ### # ###
+
+atividade%>%
+  arrange(CORRELACAO_ABSOLUTA)%>%
+  head(10)%>%
+  pull(DESCRICAO_CARGO) -> cargos
+
+subset_salarios %>%
+  filter(DESCRICAO_CARGO %in% cargos) %>%
+  count(ORGSUP_LOTACAO) %>%
+  arrange(desc(n)) %>%
+  head(1)%>% 
+  pull(ORGSUP_LOTACAO) -> moda_orgsup_lotacaof
+
+subset_salarios %>%
+  count(ORGSUP_EXERCICIO) %>%
+  arrange(desc(n)) %>%
+  head(1)%>% 
+  pull(ORGSUP_EXERCICIO) -> moda_orgsup_exerciciof
+
+atividade%>%
+  arrange(CORRELACAO_ABSOLUTA)%>%
+  tail(10)%>%
+  pull(DESCRICAO_CARGO) -> cargos
+
+subset_salarios %>%
+  filter(DESCRICAO_CARGO %in% cargos) %>%
+  count(ORGSUP_LOTACAO) %>%
+  arrange(desc(n)) %>%
+  head(1)%>% 
+  pull(ORGSUP_LOTACAO) -> moda_orgsup_lotacao
+
+subset_salarios %>%
+  count(ORGSUP_EXERCICIO) %>%
+  arrange(desc(n)) %>%
+  head(1)%>% 
+  pull(ORGSUP_EXERCICIO) -> moda_orgsup_exercicio
+
+# TOP 10
+print(paste('LOTACAO:',moda_orgsup_lotacao,' EXERCICIO:',moda_orgsup_exercicio))
+# LOW 10
+print(paste('LOTACAO:',moda_orgsup_lotacaof,' EXERCICIO:',moda_orgsup_exerciciof))
