@@ -65,13 +65,13 @@ subset_salarios %>%
   filter(DESCRICAO_CARGO %in% cargos) %>%
   count(ORGSUP_LOTACAO) %>%
   arrange(desc(n)) %>%
-  head(1)%>% 
+  head(10)%>% 
   pull(ORGSUP_LOTACAO) -> moda_orgsup_lotacaof
 
 subset_salarios %>%
   count(ORGSUP_EXERCICIO) %>%
   arrange(desc(n)) %>%
-  head(1)%>% 
+  head(10)%>% 
   pull(ORGSUP_EXERCICIO) -> moda_orgsup_exerciciof
 
 atividade%>%
@@ -83,13 +83,13 @@ subset_salarios %>%
   filter(DESCRICAO_CARGO %in% cargos) %>%
   count(ORGSUP_LOTACAO) %>%
   arrange(desc(n)) %>%
-  head(1)%>% 
+  head(10)%>% 
   pull(ORGSUP_LOTACAO) -> moda_orgsup_lotacao
 
 subset_salarios %>%
   count(ORGSUP_EXERCICIO) %>%
   arrange(desc(n)) %>%
-  head(1)%>% 
+  head(10)%>% 
   pull(ORGSUP_EXERCICIO) -> moda_orgsup_exercicio
 
 # TOP 10
