@@ -10,6 +10,8 @@ insta_orders <- read_csv( "project/orders_instacart.csv" )           # Amostra d
 insta_products <- read_csv( "project/order_products_instacart.csv" ) # Produtos que compõe os pedidos
 
 
+
+
 #1 # Quantos dos produtos do cadastro nunca foram comprados?
 
 total_products <- products %>%
@@ -30,6 +32,9 @@ never_bought <- total_products - total_product_orders
 
   
 #2 # Crie um dataframe com os dados combinados de produtos, corredores e departamentos. 
+
+prod_dep_set <- left_join(products,departments, by = "department_id")
+prod_dep_ais_set <- left_join(prod_dep_set,aisles, by = "aisle_id")
 
 
 #3 # Quais as 10 combinações corredor + departamento que possuem mais produtos cadastrados? Use o dataframe da atividade #2.
