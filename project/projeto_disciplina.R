@@ -2,6 +2,7 @@
 # Estamos trabalhando com somente uma amostra do total de pedidos. O dataset abaixo não possui 3 milhões de pedidos ;)
 library( tidyverse )
 library(dplyr)
+library(ggplot2)
 
 departments <- read_csv("project/departments.csv")                   # Cadastro de Departamentos
 aisles <- read_csv("project/aisles.csv")                             # Cadastro de "Corredores"
@@ -38,32 +39,80 @@ mixed_set <- left_join(prod_dep_set,aisles, by = "aisle_id")
 #3 # Quais as 10 combinações corredor + departamento que possuem mais produtos cadastrados? Use o dataframe da atividade #2.
 
 mixed_set %>%
-  group_by(aisle, department) %>%
+  group_by(aisle_id, aisle, department_id, department) %>%
   summarise(qtd = n()) %>%
   ungroup() %>%
   arrange(desc(qtd)) %>%
-  head(10)
+  head(10) -> top_mixed_set
+
 
 #4 # Qual o percentual de pedidos que possuem algum produto dos pares 'corredor + departamento' da atividade anterior?
 
+products %>%  
+  right_join(top_mixed_set, by = ("aisle_id")) %>%
+  inner_join(insta_products, by = ("product_id"))%>%
+  distinct(order_id)%>%
+  count() -> orders_count
+
+total_insta_orders <- count(insta_orders)
+
+perc <- ((orders_count/total_insta_orders) * 100)
+
+# 62.75713 %
 
 #5 # Crie um novo dataframe de produtos em pedidos retirando aqueles produtos que não estão categorizados (usar resultado das atividades 3 e 4)
 
+catego_product_set <- left_join(mixed_set ,insta_products, by = "product_id") %>%
+  filter(department != "missing" | aisle != "missing")
+
 
 #6 # Crie um dataframe que combine todos os dataframes através das suas chaves de ligação. Para produtos de pedidos, use o dataframe da atividade 4
+
+full_set <- left_join(catego_product_set, insta_orders, by = "order_id")
+
    # Transforme as variáveis user_id, department e aisle em factor
+full_set$user_id <- factor(full_set$user_id)
+full_set$department <- factor(full_set$department)
+full_set$aisle <- factor(full_set$aisle)
+
+full_set
+
    # Transforme a variável order_hour_of_day em um factor ordenado (ordered)
+full_set$order_hour_of_day <- factor(full_set$order_hour_of_day, ordered = TRUE)
 
    # Este dataframe deverá ser utilizado em todas as atividades seguintes
+full_set
 
 
 #7 # Identifique os 5 horários com maior quantidade de usuários que fizeram pedidos
 
+full_set  %>%
+  select(user_id, order_id, order_hour_of_day) %>%
+  group_by(order_hour_of_day) %>%
+  distinct(user_id, order_id, order_hour_of_day) -> temp_set
+
+temp_set %>%
+  group_by(order_hour_of_day) %>%
+  count(sum = n()) %>%
+  arrange(desc(sum)) %>%
+  head(5) -> top_hours_orders
 
 #8 # Quais os 15 produtos mais vendidos nestes 5 horários? Identifique os produtos e a quantidade total nestes horários (total geral, não por hora)
 
+full_set %>%
+  filter(order_hour_of_day %in% as.factor(top_hours_orders$order_hour_of_day)) %>%
+  group_by(product_id, product_name) %>%
+  count(n = n()) %>%
+  arrange(desc(n)) %>%
+  head(15)
 
 #9 # Calcule a média de vendas por hora destes 15 produtos ao longo do dia,
+
+full_set %>%
+  filter(order_hour_of_day %in% as.factor(top_hours_orders$order_hour_of_day))  %>%
+  group_by(order_hour_of_day, product_name) %>%
+  summarise(Mean = mean(product_id)) -> mean_set
+
    # e faça um gráfico de linhas mostrando a venda média por hora destes produtos. 
    # Utilize o nome do produto para legenda da cor da linha.
    # Você consegue identificar algum produto com padrão de venda diferente dos demais? 
