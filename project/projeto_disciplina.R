@@ -1,6 +1,7 @@
 # Descrição dos dados: https://tech.instacart.com/3-million-instacart-orders-open-sourced-d40d29ead6f2
 # Estamos trabalhando com somente uma amostra do total de pedidos. O dataset abaixo não possui 3 milhões de pedidos ;)
 library( tidyverse )
+library(dplyr)
 
 departments <- read_csv("project/departments.csv")                   # Cadastro de Departamentos
 aisles <- read_csv("project/aisles.csv")                             # Cadastro de "Corredores"
@@ -8,9 +9,6 @@ products <- read_csv("project/products.csv")                         # Cadastro 
 
 insta_orders <- read_csv( "project/orders_instacart.csv" )           # Amostra de pedidos de usuários
 insta_products <- read_csv( "project/order_products_instacart.csv" ) # Produtos que compõe os pedidos
-
-
-
 
 #1 # Quantos dos produtos do cadastro nunca foram comprados?
 
@@ -34,11 +32,17 @@ never_bought <- total_products - total_product_orders
 #2 # Crie um dataframe com os dados combinados de produtos, corredores e departamentos. 
 
 prod_dep_set <- left_join(products,departments, by = "department_id")
-prod_dep_ais_set <- left_join(prod_dep_set,aisles, by = "aisle_id")
+mixed_set <- left_join(prod_dep_set,aisles, by = "aisle_id")
 
 
 #3 # Quais as 10 combinações corredor + departamento que possuem mais produtos cadastrados? Use o dataframe da atividade #2.
 
+mixed_set %>%
+  group_by(aisle, department) %>%
+  summarise(qtd = n()) %>%
+  ungroup() %>%
+  arrange(desc(qtd)) %>%
+  head(10)
 
 #4 # Qual o percentual de pedidos que possuem algum produto dos pares 'corredor + departamento' da atividade anterior?
 
