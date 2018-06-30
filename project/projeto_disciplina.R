@@ -271,3 +271,19 @@ ggplot(ped_med_hora_semana, aes(x=order_hour_of_day, y=med)) +
         title = 'Histograma de média de pedidos de bananas por dias da semana')
 #22 # Teste se há diferença nas vendas por hora entre os dias 3 e 4 usando o teste de wilcoxon e utilizando a simulação da aula de testes
 
+# wilcox.test(views ~ category, 
+# data = ted_top_categories, 
+# alternative = "two.sided", 
+# subset = category %in% c("Inspiring", "Funny"), 
+# conf.int = TRUE)
+
+wilcox.test(med ~ order_dow, 
+            data = ped_med_hora_semana, 
+            alternative = "two.sided", 
+            subset = order_dow %in% c(3, 4), 
+            conf.int = TRUE)
+
+
+
+
+
