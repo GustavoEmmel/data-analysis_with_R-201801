@@ -1,6 +1,4 @@
-
-# Trabalho R
-#Everton, Gustavo e Michel
+#Everton Thomas, Gustavo Emmel e Michel Batalha
 
 # Descrição dos dados: https://tech.instacart.com/3-million-instacart-orders-open-sourced-d40d29ead6f2
 # Estamos trabalhando com somente uma amostra do total de pedidos. O dataset abaixo não possui 3 milhões de pedidos ;)
@@ -136,7 +134,8 @@ full_df %>%
   group_by(order_hour_of_day) -> x
 
 # Considerando os valores calculados, você acredita que a distribuição por hora é gaussiana? 
-# R.: Acredito que não é uma distribuição gaussiana ou normal, como é possível verificar através do histograma
+# R.: Sim, conforme mostra o gráfico, a distribuição é uma gaussiana, 
+#já que possui um pico próximo a média e as extremidades são menores, no formato de sino.
 
 #{VALIDAR}
 
@@ -146,7 +145,19 @@ ggplot(x, aes(x=order_hour_of_day)) +
 
 #11 # Faça um gráfico da média de quantidade de produtos por hora, com 1 desvio padrão para cima e para baixo em forma de gráfico de banda
 
-#{DEPENDE DA QUESTÃO 9}
+full_df %>%
+  group_by(order_dow, order_hour_of_day) %>%
+  summarise(qtd_vendas = n()) %>%
+  group_by(order_hour_of_day) %>%
+  summarise(med = mean(qtd_vendas)) %>%
+  mutate(sd_abaixo = med - 2 * sd(med), 
+         sd_acima = med + 2 * sd(med)) -> summary_product
+
+ggplot(summary_product, aes(x=order_hour_of_day, y=med, ymin=sd_abaixo, ymax=sd_acima, group=1)) +
+  geom_line() + 
+  geom_ribbon(fill = "orange", alpha = 0.5) + 
+  geom_jitter(alpha = .2, height = 0, width = 0.3)
+
 
 #12 # Visualize um boxplot da quantidade de pedidos por hora nos 7 dias da semana. O resultado deve ter order_dow como eixo x.
 
@@ -180,12 +191,12 @@ ggplot(tempo_med_entre_pedidos, aes(x=tempo)) +
 
 #15 # Faça um gráfico de barras com a quantidade de usuários em cada número de dias desde o pedido anterior. Há alguma similaridade entre os gráficos das atividades 14 e 15? 
 
-# nao a diferença entre os graficos
-
 ggplot(full_df, aes(x=days_since_prior_order)) +
   geom_bar( alpha = 0.5, fill="orange", color = "orange" ) +
-  scale_x_continuous() +
-  labs( x = "Tempo médio entre ultimo pedido (em dias)", y = "Qtde usuarios" )
+  scale_y_continuous(labels = scales::comma_format()) +
+  labs( x = "Nro. dias do pedido anterior", y = "Qtde usuarios" )
+
+#Sim, os gráficos são bem semelhantes
 
 #16 # Repita o gráfico da atividade 14 mantendo somente os usuários com no mínimo 5 pedidos. O padrão se mantém?
 
@@ -274,40 +285,17 @@ ggplot(ped_med_hora_semana, aes(x=order_hour_of_day, y=med)) +
         x = 'Hora do dia',
         title = 'Histograma de média de pedidos de bananas por dias da semana')
 #22 # Teste se há diferença nas vendas por hora entre os dias 3 e 4 usando o teste de wilcoxon e utilizando a simulação da aula de testes
-knitr::opts_chunk$set(message = FALSE, warning = FALSE)
-
-# wilcox.test(views ~ category, 
-# data = ted_top_categories, 
-# alternative = "two.sided", 
-# subset = category %in% c("Inspiring", "Funny"), 
-# conf.int = TRUE)
 
 wilcox.test(med ~ order_dow, 
             data = ped_med_hora_semana, 
             alternative = "two.sided", 
             subset = order_dow %in% c(3, 4), 
-            conf.int = TRUE)
-
-
-#ted_top_categories %>%
-#  collect() %>%
-#  mutate( category = factor( category )) -> local_ted_top_categories
-
-# kruskal.test(views ~ category, data = local_ted_top_categories)
+            conf.int = TRUE, exact = FALSE)
 
 ped_med_hora_semana %>%
-  collect() %>%
-  mutate( med = factor( med )) -> temp_ped_med_hora_semana
+  filter(order_dow %in% c(3,4)) -> vendas_hora
 
-
-kruskal.test(med ~ order_dow, data = temp_ped_med_hora_semana)
-
-# pairwise.wilcox.test(local_ted_top_categories$views, 
-# local_ted_top_categories$category, p.adjust.method = "BH")
-
-pairwise.wilcox.test(temp_ped_med_hora_semana$order_dow, 
-    temp_ped_med_hora_semana$med, p.adjust.method = "BH")
-
-
-
+pairwise.wilcox.test(vendas_hora$med, 
+                     vendas_hora$order_dow, 
+                     p.adjust.method = "BH", exact = FALSE)
 
